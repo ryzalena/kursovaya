@@ -1,6 +1,6 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QComboBox, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QComboBox, QWidget, QFileDialog
 from PyQt5.QtGui import QFont
 from PIL import Image, ImageDraw, ImageFont
 import pandas as pd
@@ -30,68 +30,63 @@ class Window(QMainWindow):
         self.btn.clicked.connect(self.users)
 
     def users(self):
+
+
         self.text.hide()
         self.btn.hide()
 
-        self.text2 = QLabel("Вам необходимо задать X и Y-координаты для расположения текста.", self)
-        self.text2.move(100, 100)
-        self.text2.adjustSize()
+        self.base_image_path, _ = QFileDialog.getOpenFileName(self, 'Выберите изображение для основы грамоты', '', '*.png *.jpg *.jpeg')
+        if not self.base_image_path:
+            print("No image selected. Exiting.")
+            sys.exit()
 
-        self.text3 = QLabel("Вводить данные необходимо в пикселях.", self)
-        self.text3.move(100, 130)
-        self.text3.adjustSize()
 
-        self.text4 = QLabel("Выберите вариант для X:", self)
-        self.text4.move(100, 160)
-        self.text4.adjustSize()
+        self.data_path, _ = QFileDialog.getOpenFileName(self, 'Выберите файл Excel для сбора данных', '', '*.xlsx')
+        if not self.data_path:
+            print("No Excel file selected. Exiting.")
+            sys.exit()
 
-        self.btn2 = QPushButton("Одинаковый для всех строк", self)
-        self.btn2.setFixedWidth(200)
-        self.btn2.move(100, 200)
-        self.btn2.clicked.connect(self.same)
+        self.text11 = QLabel("Вам необходимо задать X и Y-координаты для расположения текста.", self)
+        self.text11.move(100, 70)
+        self.text11.adjustSize()
+        self.text11.show()
 
-        self.btn3 = QPushButton("Разный для каждой строки", self)
-        self.btn3.setFixedWidth(200)
-        self.btn3.move(450, 200)
-        self.btn3.clicked.connect(self.hui2)
+        self.text12 = QLabel("Вводить данные необходимо в пикселях.", self)
+        self.text12.move(100, 100)
+        self.text12.adjustSize()
+        self.text12.show()
 
-        self.text2.show()
-        self.text3.show()
-        self.text4.show()
-        self.btn2.show()
-        self.btn3.show()
-
-    def same(self):
-        self.text2.hide()
-        self.text3.hide()
-        self.text4.hide()
-        self.btn2.hide()
-        self.btn3.hide()
-
-        self.text5 = QLabel("Вводить данные необходимо в пикселях.", self)
-        self.text5.move(100, 100)
-        self.text5.adjustSize()
-        self.text5.show()
-
-        self.text51 = QLabel("Ввод для Х:", self)
-        self.text51.move(100, 135)
-        self.text51.adjustSize()
-        self.text51.show()
+        self.text13 = QLabel("Ввод для Х:", self)
+        self.text13.move(100, 135)
+        self.text13.adjustSize()
+        self.text13.show()
 
         self.num1_input = QLineEdit(self)
         self.num1_input.setFixedWidth(50)
         self.num1_input.move(250, 130)
         self.num1_input.show()
 
-        self.text52 = QLabel("Введите данные для Y.", self)
-        self.text52.move(100, 200)
-        self.text52.adjustSize()
-        self.text52.show()
+        self.text14 = QLabel("Введите данные для Y:", self)
+        self.text14.move(100, 200)
+        self.text14.adjustSize()
+        self.text14.show()
 
-        self.text53 = QLabel("Для ФИО ребенка:", self)
-        self.text53.move(100, 235)
-        self.text53.adjustSize()
-        self.text53.show()
+        self.text15 = QLabel("Выберите шрифт:", self)
+        self.text15.move(350, 200)
+        self.text15.adjustSize()
+        self.text15.show()
+
+        self.text110 = QLabel("Введите размер шрифта:", self)
+        self.text110.move(600, 200)
+        self.text110.adjustSize()
+        self.text110.show()
+
+
+
+        self.text16 = QLabel("Для ФИО ребенка:", self)
+        self.text16.move(100, 235)
+        self.text16.adjustSize()
+        self.text16.show()
 
 
         self.num2_input = QLineEdit(self)
@@ -106,11 +101,16 @@ class Window(QMainWindow):
         self.font_combo.resize(200, 30)
         self.font_combo.show()
 
+        self.size_combo = QComboBox(self)
+        self.size_combo.addItems(["6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36", "40", "50", "52", "54", "56", "58", "60"])
+        self.size_combo.move(600, 230)
+        self.size_combo.resize(100, 30)
+        self.size_combo.show()
 
-        self.text54 = QLabel("Для места:", self)
-        self.text54.move(100, 270)
-        self.text54.adjustSize()
-        self.text54.show()
+        self.text17 = QLabel("Для места:", self)
+        self.text17.move(100, 270)
+        self.text17.adjustSize()
+        self.text17.show()
 
         self.num3_input = QLineEdit(self)
         self.num3_input.setFixedWidth(50)
@@ -124,11 +124,16 @@ class Window(QMainWindow):
         self.font_combo2.resize(200, 30)
         self.font_combo2.show()
 
+        self.size_combo2 = QComboBox(self)
+        self.size_combo2.addItems(["6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36", "40", "50", "52", "54", "56", "58", "60"])
+        self.size_combo2.move(600, 265)
+        self.size_combo2.resize(100, 30)
+        self.size_combo2.show()
 
-        self.text55 = QLabel("Для ФИО педагога:", self)
-        self.text55.move(100, 305)
-        self.text55.adjustSize()
-        self.text55.show()
+        self.text18 = QLabel("Для ФИО педагога:", self)
+        self.text18.move(100, 305)
+        self.text18.adjustSize()
+        self.text18.show()
 
         self.num4_input = QLineEdit(self)
         self.num4_input.setFixedWidth(50)
@@ -142,10 +147,18 @@ class Window(QMainWindow):
         self.font_combo3.resize(200, 30)
         self.font_combo3.show()
 
-        self.text56 = QLabel("Для названия ОУ:", self)
-        self.text56.move(100, 340)
-        self.text56.adjustSize()
-        self.text56.show()
+
+
+        self.size_combo3 = QComboBox(self)
+        self.size_combo3.addItems(["6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36", "40", "50", "52", "54", "56", "58", "60"])
+        self.size_combo3.move(600, 300)
+        self.size_combo3.resize(100, 30)
+        self.size_combo3.show()
+
+        self.text19 = QLabel("Для названия ОУ:", self)
+        self.text19.move(100, 340)
+        self.text19.adjustSize()
+        self.text19.show()
 
         self.num5_input = QLineEdit(self)
         self.num5_input.setFixedWidth(50)
@@ -158,6 +171,15 @@ class Window(QMainWindow):
         self.font_combo4.move(350, 335)
         self.font_combo4.resize(200, 30)
         self.font_combo4.show()
+
+        self.size_combo4 = QComboBox(self)
+        self.size_combo4.addItems(["6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36", "40", "50", "52", "54", "56", "58", "60"])
+        self.size_combo4.move(600, 335)
+        self.size_combo4.resize(100, 30)
+        self.size_combo4.show()
+
+
+
 
         self.btn4 = QPushButton("Сгенерировать", self)
         self.btn4.setFixedWidth(200)
@@ -194,43 +216,50 @@ class Window(QMainWindow):
         font_name2 = self.font_combo2.currentText()
         font_name3 = self.font_combo3.currentText()
         font_name4 = self.font_combo4.currentText()
+        size1 = self.size_combo.currentText()
+        size2 = self.size_combo2.currentText()
+        size3 = self.size_combo3.currentText()
+        size4 = self.size_combo4.currentText()
 
-        self.preparation(x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4)
 
-    def preparation(self, x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4):
-        x = int(x)
-        kid = int(kid)
-        place = int(place)
-        teacher = int(teacher)
-        school = int(school)
 
-        data = pd.read_excel('data.xlsx')
-        image_path = 'osnova.png'
+        self.preparation(x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4)
+
+    def preparation(self, x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4):
+        x = float(x)
+        kid = float(kid)
+        place = float(place)
+        teacher = float(teacher)
+        school = float(school)
+
+
+        image_path = self.base_image_path
+        data = pd.read_excel(self.data_path)
 
         font_path = os.path.join("C:\\Windows\\Fonts", font_name)
         try:
-            font = ImageFont.truetype(font_path, 24)
+            font = ImageFont.truetype(font_path, size=int(size1))
         except IOError:
             print(f"Не удалось загрузить шрифт: {font_path}")
             return
 
         font_path2 = os.path.join("C:\\Windows\\Fonts", font_name2)
         try:
-            font2 = ImageFont.truetype(font_path2, 24)
+            font2 = ImageFont.truetype(font_path2, size=int(size2))
         except IOError:
             print(f"Не удалось загрузить шрифт: {font_path2}")
             return
 
         font_path3 = os.path.join("C:\\Windows\\Fonts", font_name3)
         try:
-            font3 = ImageFont.truetype(font_path2, 24)
+            font3 = ImageFont.truetype(font_path3, size=int(size3))
         except IOError:
             print(f"Не удалось загрузить шрифт: {font_path3}")
             return
 
-        font_path4 = os.path.join("C:\\Windows\\Fonts", font_name2)
+        font_path4 = os.path.join("C:\\Windows\\Fonts", font_name4)
         try:
-            font4 = ImageFont.truetype(font_path4, 24)
+            font4 = ImageFont.truetype(font_path4, size=int(size4))
         except IOError:
             print(f"Не удалось загрузить шрифт: {font_path4}")
             return
