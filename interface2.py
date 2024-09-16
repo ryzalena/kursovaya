@@ -320,7 +320,7 @@ class Window(QMainWindow):
             for line in teacher_lines:
                 _, _, _, height = draw.textbbox((0, 0), line, font=font)
                 draw.text((x, y), line, anchor="ms", font=font, fill="black")
-                y += heigh
+                y += height
 
             y = school
             for line in school_lines:
