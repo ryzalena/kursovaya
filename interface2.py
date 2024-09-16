@@ -231,6 +231,25 @@ class Window(QMainWindow):
 
         self.preparation(x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4)
 
+    def split_text(self, text, font, size):
+        words = text.split(' ')
+        lines = []
+        current_line = ''
+
+        for word in words:
+            if len(current_line) + len(word) + 1 > 25:  # Add 1 for space
+                lines.append(current_line)
+                current_line = word
+            else:
+                if current_line:
+                    current_line += ' ' + word
+                else:
+                    current_line = word
+
+        if current_line:
+            lines.append(current_line)
+
+        return lines
     def preparation(self, x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4):
         x = int(x)
         kid = int(kid)
@@ -280,10 +299,34 @@ class Window(QMainWindow):
             teacher_name = row['Ф.И.О. педагога (руководителя)']
             school_name = row['Полное наименование образовательного учреждения']
 
-            draw.text((x, kid), author_name, anchor="ms", font=font, fill="black")
-            draw.text((x, place), place_name, anchor="ms", font=font2, fill="black")
-            draw.text((x, teacher), teacher_name, anchor="ms", font=font3, fill="black")
-            draw.text((x, school), school_name, anchor="ms", font=font4, fill="black")
+            author_lines = self.split_text(author_name, font, size1)
+            place_lines = self.split_text(place_name, font2, size2)
+            teacher_lines = self.split_text(teacher_name, font3, size3)
+            school_lines = self.split_text(school_name, font4, size4)
+
+            y = kid
+            for line in author_lines:
+                _, _, _, height = draw.textbbox((0, 0), line, font=font)
+                draw.text((x, y), line, anchor="ms", font=font, fill="black")
+                y += height
+
+            y = place
+            for line in place_lines:
+                _, _, _, height = draw.textbbox((0, 0), line, font=font)
+                draw.text((x, y), line, anchor="ms", font=font, fill="black")
+                y += height
+
+            y = teacher
+            for line in teacher_lines:
+                _, _, _, height = draw.textbbox((0, 0), line, font=font)
+                draw.text((x, y), line, anchor="ms", font=font, fill="black")
+                y += height
+
+            y = school
+            for line in school_lines:
+                _, _, _, height = draw.textbbox((0, 0), line, font=font)
+                draw.text((x, y), line, anchor="ms", font=font, fill="black")
+                y += height
             image.save(f"output_{index}.png")
 
         self.text6 = QLabel("Грамоты созданы", self)
