@@ -29,13 +29,19 @@ class Window(QMainWindow):
         self.btn.move(100, 150)
         self.btn.clicked.connect(self.users)
 
+        self.btn2 = QPushButton("Городские", self)
+        self.btn2.setFixedWidth(150)
+        self.btn2.move(400, 150)
+        self.btn2.clicked.connect(self.city)
+
     def users(self):
 
 
         self.text.hide()
         self.btn.hide()
+        self.btn2.hide()
 
-        self.base_image_path, _ = QFileDialog.getOpenFileName(self, 'Выберите изображение для основы грамоты', '', '*.png *.jpg *.jpeg')
+        self.base_image_path, _ = QFileDialog.getOpenFileName(self, 'Выберите изображение для основы грамоты', '', '*.png')
         if not self.base_image_path:
             print("No image selected. Exiting.")
             sys.exit()
@@ -226,11 +232,11 @@ class Window(QMainWindow):
         self.preparation(x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4)
 
     def preparation(self, x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4):
-        x = float(x)
-        kid = float(kid)
-        place = float(place)
-        teacher = float(teacher)
-        school = float(school)
+        x = int(x)
+        kid = int(kid)
+        place = int(place)
+        teacher = int(teacher)
+        school = int(school)
 
 
         image_path = self.base_image_path
@@ -264,28 +270,46 @@ class Window(QMainWindow):
             print(f"Не удалось загрузить шрифт: {font_path4}")
             return
 
+
         for index, row in data.iterrows():
             image = Image.open(image_path)
             draw = ImageDraw.Draw(image)
 
-            surname = row['Фамилия']
-            name = row['Имя']
-            patronymic = row['Отчество']
+            author_name = row['Фамилия, имя автора конкурсной работы']
+            place_name = row['Место']
+            teacher_name = row['Ф.И.О. педагога (руководителя)']
+            school_name = row['Полное наименование образовательного учреждения']
 
-            draw.text((x, kid), surname, anchor="ms", font=font, fill="black")
-            draw.text((x, place), name, anchor="ms", font=font2, fill="black")
-            draw.text((x, teacher), patronymic, anchor="ms", font=font3, fill="black")
-            draw.text((x, school), patronymic, anchor="ms", font=font4, fill="black")
-
+            draw.text((x, kid), author_name, anchor="ms", font=font, fill="black")
+            draw.text((x, place), place_name, anchor="ms", font=font2, fill="black")
+            draw.text((x, teacher), teacher_name, anchor="ms", font=font3, fill="black")
+            draw.text((x, school), school_name, anchor="ms", font=font4, fill="black")
             image.save(f"output_{index}.png")
+
         self.text6 = QLabel("Грамоты созданы", self)
         self.text6.move(100, 430)
         self.text6.adjustSize()
         self.text6.show()
 
-    def hui2(self):
+    def city(self):
         pass
 
+"""
+    def city(self):
+        self.text.hide()
+        self.btn.hide()
+
+        self.base_image_path, _ = QFileDialog.getOpenFileName(self, 'Выберите изображение для основы грамоты', '',
+                                                              '*.png')
+        if not self.base_image_path:
+            print("No image selected. Exiting.")
+            sys.exit()
+
+        self.data_path, _ = QFileDialog.getOpenFileName(self, 'Выберите файл Excel для сбора данных', '', '*.xlsx')
+        if not self.data_path:
+            print("No Excel file selected. Exiting.")
+            sys.exit()
+"""
 def application():
     app = QApplication(sys.argv)
     app.setStyleSheet('QLabel { font: bold }')
