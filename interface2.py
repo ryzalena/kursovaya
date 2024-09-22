@@ -1,7 +1,8 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QComboBox, QWidget, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QComboBox, QWidget, QFileDialog, QVBoxLayout
 from PyQt5.QtGui import QFont
+from PyQt5 import QtGui
 from PIL import Image, ImageDraw, ImageFont
 import pandas as pd
 
@@ -11,6 +12,7 @@ class Window(QMainWindow):
 
         self.setWindowTitle("Автозаполнение грамот для ЦВО Творчество")
         self.setGeometry(200, 200, 800, 500)
+        self.setWindowIcon(QtGui.QIcon('logo.svg'))
 
         # Создаем центральный виджет
         self.central_widget = QWidget(self)
@@ -27,30 +29,97 @@ class Window(QMainWindow):
         self.btn = QPushButton("Пользовательские", self)
         self.btn.setFixedWidth(150)
         self.btn.move(100, 150)
-        self.btn.clicked.connect(self.users)
+        self.btn.clicked.connect(self.user)
 
         self.btn2 = QPushButton("Городские", self)
         self.btn2.setFixedWidth(150)
         self.btn2.move(400, 150)
         self.btn2.clicked.connect(self.city)
 
-    def users(self):
-
-
+    def user(self):
         self.text.hide()
         self.btn.hide()
         self.btn2.hide()
 
-        self.base_image_path, _ = QFileDialog.getOpenFileName(self, 'Выберите изображение для основы грамоты', '', '*.png')
-        if not self.base_image_path:
-            print("No image selected. Exiting.")
-            sys.exit()
+        self.text21 = QLabel("Выберите PNG картинку для основы, Excel файл для входных данных и папку для сохранения.", self)
+        self.text21.move(100, 70)
+        self.text21.adjustSize()
+        self.text21.show()
 
 
-        self.data_path, _ = QFileDialog.getOpenFileName(self, 'Выберите файл Excel для сбора данных', '', '*.xlsx')
-        if not self.data_path:
-            print("No Excel file selected. Exiting.")
-            sys.exit()
+        self.btn4 = QPushButton("Выбрать PNG файл", self)
+        self.btn4.setFixedWidth(400)
+        self.btn4.move(100, 100)
+        self.btn4.clicked.connect(self.load_png_file)
+        self.btn4.show()
+
+
+        self.btn5 = QPushButton("Выбрать Excel файл", self)
+        self.btn5.setFixedWidth(400)
+        self.btn5.move(100, 130)
+        self.btn5.clicked.connect(self.load_excel_file)
+        self.btn5.show()
+
+        self.btn6 = QPushButton("Выбрать папку для сохранения", self)
+        self.btn6.setFixedWidth(400)
+        self.btn6.move(100, 160)
+        self.btn6.clicked.connect(self.save_folder)
+        self.btn6.show()
+
+        self.btn7 = QPushButton("Далее", self)
+        self.btn7.setFixedWidth(400)
+        self.btn7.move(100, 300)
+        self.btn7.clicked.connect(self.users)
+        self.btn7.show()
+
+
+    def load_png_file(self):
+
+        self.png_file, _ = QFileDialog.getOpenFileName(self, "Выберите PNG файл", "", "png Files (*.png)")
+        self.text22 = QLabel(f"Выбран PNG файл: {self.png_file}", self)
+        self.text22.move(100, 200)
+        self.text22.adjustSize()
+        self.text22.show()
+
+
+    def load_excel_file(self):
+        self.excel_file, _ = QFileDialog.getOpenFileName(self, "Выберите Excel файл", "", "Excel Files (*.xlsx)")
+        self.text23 = QLabel(f"Выбран Excel файл: {self.excel_file}", self)
+        self.text23.move(100, 230)
+        self.text23.adjustSize()
+        self.text23.show()
+
+    def save_folder(self):
+        # Открываем диалог выбора папки
+        self.save_folder = QFileDialog.getExistingDirectory(self, "Выберите папку для сохранения")
+
+
+        self.text23 = QLabel(f"Выбрана папка: {self.save_folder}", self)
+        self.text23.move(100, 260)
+        self.text23.adjustSize()
+        self.text23.show()
+
+
+
+    def process_files(self):
+        pass
+
+    def users(self):
+
+        # self.text.hide()
+        # self.btn.hide()
+        # self.btn2.hide()
+        #
+        # self.base_image_path, _ = QFileDialog.getOpenFileName(self, 'Выберите изображение для основы грамоты', '', '*.png')
+        # if not self.base_image_path:
+        #     print("No image selected. Exiting.")
+        #     sys.exit()
+        #
+        #
+        # self.data_path, _ = QFileDialog.getOpenFileName(self, 'Выберите файл Excel для сбора данных', '', '*.xlsx')
+        # if not self.data_path:
+        #     print("No Excel file selected. Exiting.")
+        #     sys.exit()
 
         self.text11 = QLabel("Вам необходимо задать X и Y-координаты для расположения текста.", self)
         self.text11.move(100, 70)
@@ -187,11 +256,11 @@ class Window(QMainWindow):
 
 
 
-        self.btn4 = QPushButton("Сгенерировать", self)
-        self.btn4.setFixedWidth(200)
-        self.btn4.move(100, 375)
-        self.btn4.clicked.connect(self.read_and_pass_data)
-        self.btn4.show()
+        self.btn3 = QPushButton("Сгенерировать", self)
+        self.btn3.setFixedWidth(200)
+        self.btn3.move(100, 375)
+        self.btn3.clicked.connect(self.read_and_pass_data)
+        self.btn3.show()
 
     def list_fonts(self):
         font_dirs = [
@@ -250,12 +319,12 @@ class Window(QMainWindow):
             lines.append(current_line)
 
         return lines
-    def preparation(self, x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4):
-        x = int(x)
-        kid = int(kid)
-        place = int(place)
-        teacher = int(teacher)
-        school = int(school)
+    def preparation(self, x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4, save_folder):
+        x = float(x)
+        kid = float(kid)
+        place = float(place)
+        teacher = float(teacher)
+        school = float(school)
 
 
         image_path = self.base_image_path
@@ -289,15 +358,21 @@ class Window(QMainWindow):
             print(f"Не удалось загрузить шрифт: {font_path4}")
             return
 
+        # folder_path = QFileDialog.getExistingDirectory(None, "Выберите папку для сохранения грамот")
+        #
+        # # Проверяем, была ли выбрана папка
+        # if not folder_path:
+        #     print("Папка не выбрана.")
+        #     return
 
         for index, row in data.iterrows():
             image = Image.open(image_path)
             draw = ImageDraw.Draw(image)
 
-            author_name = row['Фамилия, имя автора конкурсной работы']
-            place_name = row['Место']
-            teacher_name = row['Ф.И.О. педагога (руководителя)']
-            school_name = row['Полное наименование образовательного учреждения']
+            author_name = row['Фамилия, имя автора конкурсной работы'].replace("\n", " ")
+            place_name = row['Место'].replace("\n", " ")
+            teacher_name = row['Ф.И.О. педагога (руководителя)'].replace("\n", " ")
+            school_name = row['Полное наименование образовательного учреждения'].replace("\n", " ")
 
             author_lines = self.split_text(author_name, font, size1)
             place_lines = self.split_text(place_name, font2, size2)
@@ -327,7 +402,27 @@ class Window(QMainWindow):
                 _, _, _, height = draw.textbbox((0, 0), line, font=font)
                 draw.text((x, y), line, anchor="ms", font=font, fill="black")
                 y += height
-            image.save(f"output_{index}.png")
+            # Формируем имя файла в нужной последовательности
+            filename = f"{school_name}_{teacher_name}_{author_name}.png"
+
+            # Заменяем недопустимые символы в имени файла
+            invalid_chars = ['<', '>', ':', '"', '/', '\\', '|', '?', '*', '\\', '\n', '(', ')', '№', '«', '»', ',', '-']
+            for char in invalid_chars:
+                filename = filename.replace(char, '')
+
+            # Заменяем пробелы на подчеркивания
+            #filename = filename.replace(' ', '_')
+
+            if len(filename) > 200:
+                filename = filename[:200]
+            # Убедимся, что файл имеет расширение .png
+            if not filename.lower().endswith('.png'):
+                filename = f"{filename}.png"
+            # Сохраняем изображение с правильным именем файла
+            full_path = os.path.join(save_folder, filename)
+
+            # Сохраняем изображение с правильным именем файла в выбранной папке
+            image.save(full_path)
 
         self.text6 = QLabel("Грамоты созданы", self)
         self.text6.move(100, 430)
