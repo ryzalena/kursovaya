@@ -5,6 +5,11 @@ from PyQt5.QtGui import QFont
 from PyQt5 import QtGui
 from PIL import Image, ImageDraw, ImageFont
 import pandas as pd
+from docx import Document
+from docx.shared import Pt
+
+
+
 
 class Window(QMainWindow):
     def __init__(self):
@@ -94,10 +99,10 @@ class Window(QMainWindow):
         self.save_folder = QFileDialog.getExistingDirectory(self, "Выберите папку для сохранения")
 
 
-        self.text23 = QLabel(f"Выбрана папка: {self.save_folder}", self)
-        self.text23.move(100, 260)
-        self.text23.adjustSize()
-        self.text23.show()
+        self.text24 = QLabel(f"Выбрана папка: {self.save_folder}", self)
+        self.text24.move(100, 260)
+        self.text24.adjustSize()
+        self.text24.show()
 
 
 
@@ -109,6 +114,18 @@ class Window(QMainWindow):
         # self.text.hide()
         # self.btn.hide()
         # self.btn2.hide()
+
+        self.text21.hide()
+        self.text22.hide()
+        self.text23.hide()
+        self.text24.hide()
+
+        self.btn4.hide()
+        self.btn5.hide()
+        self.btn6.hide()
+        self.btn7.hide()
+
+
         #
         # self.base_image_path, _ = QFileDialog.getOpenFileName(self, 'Выберите изображение для основы грамоты', '', '*.png')
         # if not self.base_image_path:
@@ -319,16 +336,16 @@ class Window(QMainWindow):
             lines.append(current_line)
 
         return lines
-    def preparation(self, x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4, save_folder):
+    def preparation(self, x, kid, place, teacher, school, font_name, font_name2, font_name3, font_name4, size1, size2, size3, size4):
         x = float(x)
         kid = float(kid)
         place = float(place)
         teacher = float(teacher)
         school = float(school)
 
-
-        image_path = self.base_image_path
-        data = pd.read_excel(self.data_path)
+        folder=self.save_folder
+        image_path = self.png_file
+        data = pd.read_excel(self.excel_file)
 
         font_path = os.path.join("C:\\Windows\\Fonts", font_name)
         try:
@@ -419,7 +436,7 @@ class Window(QMainWindow):
             if not filename.lower().endswith('.png'):
                 filename = f"{filename}.png"
             # Сохраняем изображение с правильным именем файла
-            full_path = os.path.join(save_folder, filename)
+            full_path = os.path.join(folder, filename)
 
             # Сохраняем изображение с правильным именем файла в выбранной папке
             image.save(full_path)
@@ -430,24 +447,121 @@ class Window(QMainWindow):
         self.text6.show()
 
     def city(self):
-        pass
-
-"""
-    def city(self):
         self.text.hide()
         self.btn.hide()
+        self.btn2.hide()
 
-        self.base_image_path, _ = QFileDialog.getOpenFileName(self, 'Выберите изображение для основы грамоты', '',
-                                                              '*.png')
-        if not self.base_image_path:
-            print("No image selected. Exiting.")
-            sys.exit()
+        self.text21 = QLabel("Выберите Word документ для основы, Excel файл для входных данных и папку для сохранения.",
+                             self)
+        self.text21.move(100, 70)
+        self.text21.adjustSize()
+        self.text21.show()
 
-        self.data_path, _ = QFileDialog.getOpenFileName(self, 'Выберите файл Excel для сбора данных', '', '*.xlsx')
-        if not self.data_path:
-            print("No Excel file selected. Exiting.")
-            sys.exit()
-"""
+        self.btn4 = QPushButton("Выбрать Word файл", self)
+        self.btn4.setFixedWidth(400)
+        self.btn4.move(100, 100)
+        self.btn4.clicked.connect(self.load_word_file)
+        self.btn4.show()
+
+        self.btn5 = QPushButton("Выбрать Excel файл", self)
+        self.btn5.setFixedWidth(400)
+        self.btn5.move(100, 130)
+        self.btn5.clicked.connect(self.load_excel_file)
+        self.btn5.show()
+
+        self.btn6 = QPushButton("Выбрать папку для сохранения", self)
+        self.btn6.setFixedWidth(400)
+        self.btn6.move(100, 160)
+        self.btn6.clicked.connect(self.save_folder)
+        self.btn6.show()
+
+        self.btn7 = QPushButton("Далее", self)
+        self.btn7.setFixedWidth(400)
+        self.btn7.move(100, 300)
+        self.btn7.clicked.connect(self.process_files2)
+        self.btn7.show()
+
+
+
+    def load_word_file(self):
+        self.word_file, _ = QFileDialog.getOpenFileName(self, "Выберите Word файл", "", "Word Files (*.docx)")
+        self.text24 = QLabel(f"Выбран Word файл: {self.word_file}", self)
+        self.text24.move(100, 200)
+        self.text24.adjustSize()
+        self.text24.show()
+
+
+    def process_files2(self):
+        # Чтение данных из Excel
+        data = pd.read_excel(self.excel_file)
+        folder = self.save_folder
+
+        for index, row in data.iterrows():
+            author_name = row['Фамилия, имя автора конкурсной работы'].replace("\n", " ")
+            place_name = row['Место'].replace("\n", " ")
+            teacher_name = row['Ф.И.О. педагога (руководителя)'].replace("\n", " ")
+            school_name = row['Полное наименование образовательного учреждения'].replace("\n", " ")
+
+            # Создание нового документа Word
+            doc = Document(self.word_file)
+
+
+
+            p6 = doc.paragraphs[3]
+            run_teacher = p6.add_run(author_name)
+            run_teacher.font.size = Pt(26)
+            run_teacher.font.name = 'Times New Roman'
+            run_teacher.font.bold = True
+
+            p6 = doc.paragraphs[5]
+            run_teacher = p6.add_run(school_name)
+            run_teacher.font.size = Pt(18)
+            run_teacher.font.name = 'Times New Roman'
+
+            p6 = doc.paragraphs[6]
+            run_teacher = p6.add_run(teacher_name)
+            run_teacher.font.size = Pt(18)
+            run_teacher.font.name = 'Times New Roman'
+
+            p6 = doc.paragraphs[8]
+            run_teacher = p6.add_run(place_name)
+            run_teacher.font.size = Pt(26)
+            run_teacher.font.name = 'Times New Roman'
+            run_teacher.font.bold = True
+
+
+            # Сохранение нового документа
+            filename = f"{school_name}_{teacher_name}_{author_name}.docx"
+
+            # Заменяем недопустимые символы в имени файла
+            invalid_chars = ['<', '>', ':', '"', '/', '\\', '|', '?', '*', '\\', '\n', '(', ')', '№', '«', '»', ',', '-']
+            for char in invalid_chars:
+                filename = filename.replace(char, '')
+
+            # Заменяем пробелы на подчеркивания
+            #filename = filename.replace(' ', '_')
+
+            if len(filename) > 200:
+                filename = filename[:200]
+            # Убедимся, что файл имеет расширение .png
+            if not filename.lower().endswith('.docx'):
+                filename = f"{filename}.docx"
+            # Сохраняем изображение с правильным именем файла
+            full_path = os.path.join(folder, filename)
+
+            # Сохраняем изображение с правильным именем файла в выбранной папке
+            #image.save(full_path)
+
+            #new_doc_path = f'new_document_{index + 1}.docx'
+            doc.save(full_path)
+
+        self.text6 = QLabel("Грамоты созданы", self)
+        self.text6.move(100, 430)
+        self.text6.adjustSize()
+        self.text6.show()
+
+
+
 def application():
     app = QApplication(sys.argv)
     app.setStyleSheet('QLabel { font: bold }')
